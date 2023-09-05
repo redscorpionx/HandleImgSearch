@@ -1,5 +1,5 @@
 ; Author: Lâm Thành Nhân
-; Version: 2.0.1
+; Version: 2.0.2
 ; Email: lamnhan066@gmail.com
 ; Base on
 ; - ImageSearchDLL (Author: kangkeng 2008)
@@ -39,43 +39,6 @@ Global $__HandleImgSearch_Opcode32
 Global $__HandleImgSearch_Opcode64
 Global $__HandleImgSearch_MemoryDll
 
-; ===============================================================================================================================
-; Image should be saved as "24-bit Bitmap".
-; ===============================================================================================================================
-
-; #Global Functions# ============================================================================================================
-; _GlobalImgInit($Hwnd, $X = 0, $Y = 0, $Width = -1, $Height = -1, $IsUser32 = False, $IsDebug = False, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
-; _GlobalImgCapture($Hwnd = 0)
-; _GlobalGetBitmap()
-; _GlobalImgSearchRandom($BmpLocal, $IsReCapture = False, $BmpSource = 0, $IsRandom = True, $Tolerance = $_HandleImgSearch_Tolerance, $Transparency = $_HandleImgSearch_Transparency, $MaxImg = $_HandleImgSearch_MaxImg)
-; _GlobalImgSearch($BmpLocal, $IsReCapture = False, $BmpSource = 0, $Tolerance = $_HandleImgSearch_Tolerance, $Transparency = $_HandleImgSearch_Transparency, $MaxImg = $_HandleImgSearch_MaxImg)
-; _GlobalImgWaitExist($BmpLocal, $TimeOutSecs = 5, $Tolerance = $_HandleImgSearch_Tolerance, $Transparency = $_HandleImgSearch_Transparency, $MaxImg = $_HandleImgSearch_MaxImg)
-; _GlobalGetPixel($X, $Y, $IsReCapture = False, $BmpSource = 0)
-; _GlobalPixelCompare($X, $Y, $PixelColor, $Tolerance = $_HandleImgSearch_Tolerance, $IsReCapture = False, $BmpSource = 0)
-
-; #Local Functions# =============================================================================================================
-; _HandleImgSearch($hwnd, $bmpLocal, $x = 0, $y = 0, $iWidth = -1, $iHeight = -1, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
-; _HandleImgWaitExist($hwnd, $bmpLocal, $timeOutSecs = 5, $x = 0, $y = 0, $iWidth = -1, $iHeight = -1, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
-; _BmpImgSearch($SourceBmp, $FindBmp, $x = 0, $y = 0, $iWidth = -1, $iHeight = -1, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
-; _HandleGetPixel($hwnd, $getX, $getY, $x = 0, $y = 0, $Width = -1, $Height = -1)
-; _HandlePixelCompare($hwnd, $getX, $getY, $pixelColor, $tolerance = 15, $x = 0, $y = 0, $Width = -1, $Height = -1)
-; _HandleCapture($hwnd, $x = 0, $y = 0, $Width = -1, $Height = -1, $IsBMP = False, $SavePath = "", $IsUser32 = False)
-; ===============================================================================================================================
-
-
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalImgInit
-; Description ...:	Intialize for the global functions.
-; Syntax ........: _GlobalImgInit
-; Parameters ....: $Hwnd                	- [optional] Handle of the window.
-;                  $X, $Y, $Width, $Height 	- Area of the window that you want to capture. Default is whole $hwnd window.
-;                  $IsUser32            	- [optional] Use DllCall User32.dll instead of _WinAPI_BitBlt (You can try to figure it out).. Default is False.
-;                  $IsDebug             	- [optional] Allows Debug mode. Default is False.
-;                  $Tolerance           	- [optional] Variation of the color (0 - 255). Default is 15.
-;                  $Transparancy			- [optional] The color in HEX that you want to set as the transparency. Default is no transparent.	
-;													    (Eg. If you set "0xFFFFFF", all the White color in $BmpLocal will be ignored).				
-;                  $MaxImg	           		- [optional] Max image results that you want to find. Default is 1000.
-; ===============================================================================================================================
 Func _GlobalImgInit($Hwnd = $_HandleImgSearch_HWnd, _
 		$X = $_HandleImgSearch_X, _
 		$Y = $_HandleImgSearch_Y, _
@@ -98,13 +61,6 @@ Func _GlobalImgInit($Hwnd = $_HandleImgSearch_HWnd, _
 	$_HandleImgSearch_MaxImg	= $MaxImg
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalImgCapture
-; Description ...: Capture Global.
-; Syntax ........: _GlobalImgCapture([$Hwnd = 0])
-; Parameters ....: $Hwnd                - Handle of the window if you don't use _GlobalImgInit to declare.
-; Return values .: @error <> 0 if error occurs. Returns Handle of the captured Bitmap.
-; ===============================================================================================================================
 Func _GlobalImgCapture($Hwnd = 0)
 	Local $Handle = $_HandleImgSearch_HWnd
 
@@ -135,30 +91,10 @@ Func _GlobalImgCapture($Hwnd = 0)
 	Return SetError(0, 0, $_HandleImgSearch_BitmapHandle)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalGetBitmap
-; Description ...: Returns hanle of the Bitmap.
-; Syntax ........: _GlobalGetBitmap()
-; Parameters ....:
-; Return values .: Returns hanle of the Bitmap.
-; ===============================================================================================================================
 Func _GlobalGetBitmap()
 	Return SetError(0, 0, $_HandleImgSearch_BitmapHandle)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalImgSearchRandom
-; Description ...: Return random coordinates of the first result
-; Syntax ........: _GlobalImgSearchRandom($BmpLocal[, $IsReCapture = False[, $BmpSource = 0[, $IsRandom = True[, $Tolerance = $_HandleImgSearch_Tolerance]]]])
-; Parameters ....: $BmpLocal            - The path of the BMP image to look for.
-;                  $IsReCapture         - [optional] Capture again. Default is False.
-;                  $Tolerance           - [optional] Variation of color. Default is 15.
-;                  $Transparancy		- [optional] The color in HEX that you want to set as the transparency. Default is no transparent.	
-;													    (Eg. If you set "0xFFFFFF", all the White color in $BmpLocal will be ignored).	
-;                  $BmpSource           - [optional] Handle of the Bitmap if it different to Global value. Default is 0.
-;                  $IsRandom            - [optional] Set to False if you don't want to radom the result. Default is True.
-; Return values .: @error = 1 if error occurs. Return random coordinates of the first result ($P[0] = $X, $P[1] = $Y).
-; ===============================================================================================================================
 Func _GlobalImgSearchRandom($BmpLocal, $IsReCapture = False, $BmpSource = 0, $IsRandom = True, $Tolerance = $_HandleImgSearch_Tolerance, $Transparency = $_HandleImgSearch_Transparency, $MaxImg = $_HandleImgSearch_MaxImg)
 	Local $Pos = _GlobalImgSearch($BmpLocal, $IsReCapture, $BmpSource, $Tolerance, $Transparency, $MaxImg)
 	If @error Then
@@ -175,25 +111,6 @@ Func _GlobalImgSearchRandom($BmpLocal, $IsReCapture = False, $BmpSource = 0, $Is
 	Return SetError(0, 0, $Results)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalImgSearch
-; Description ...: Find $BmpLocal in global $Hwnd window
-; Syntax ........: _GlobalImgSearch
-; Parameters ....: $BmpLocal            - Path of the finding bmp image.
-;                  $IsReCapture         - [optional] Re capture the window. Default is False.
-;                  $BmpSource           - [optional] Handle of Bitmap if not using Global.
-;                  $Tolerance           - [optional] Variation of color.
-;                  $Transparancy		- [optional] The color in HEX that you want to set as the transparency. Default is no transparent.	
-;													    (Eg. If you set "0xFFFFFF", all the White color in $BmpLocal will be ignored).	
-;                  $MaxImg          	- [optional] Max number of results that you want to get.
-; Return values .: Success: Returns a 2d array with the following format:
-;							$aCords[0][0]  		= Total results number
-;							$aCords[$i][0]		= X
-;							$aCords[$i][1] 		= Y
-;							$aCords[$i][2] 		= Width of bitmap
-;							$aCords[$i][3] 		= Height of bitmap
-;					Error occurs: @error <> 0
-; ===============================================================================================================================
 Func _GlobalImgSearch($BmpLocal, $IsReCapture = False, $BmpSource = 0, $Tolerance = $_HandleImgSearch_Tolerance, $Transparency = $_HandleImgSearch_Transparency, $MaxImg = $_HandleImgSearch_MaxImg)
 	Local $BMP = $_HandleImgSearch_BitmapHandle
 
@@ -215,23 +132,6 @@ Func _GlobalImgSearch($BmpLocal, $IsReCapture = False, $BmpSource = 0, $Toleranc
 	Return SetError(@error, 0, $Results)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalImgWaitExist
-; Description ...: Finds an image in the declared Handle.
-; Syntax ........: _GlobalImgWaitExist($BmpLocal, $TimeOutSecs = False, $Tolerance = 0, $MaxImg = 0)
-; Parameters ....: $BmpLocal - The path of the BMP image to be searched.
-; 					$TimeOutSecs - [optional] The maximum time to search for the image in seconds. Default is 5.
-; 					$Tolerance - [optional] The color difference of the image.
-;					$Transparency - Is the color that you want to ignore when seaching (Eg. If you set "0xFFFFFF", all the White color will be ignored).
-; 					$MaxImg - [optional] The maximum number of search results returned.
-; Return values .: Success: Returns a 2d array with the following format:
-; 							$aCords[0][0] = Total number of positions found
-; 							$aCords[$i][0] = X coordinate
-; 							$aCords[$i][1] = Y coordinate
-; 							$aCords[$i][2] = Width of bitmap
-; 							$aCords[$i][3] = Height of bitmap
-; 					Failure: Set @error <> 0
-; ===============================================================================================================================
 Func _GlobalImgWaitExist($BmpLocal, $TimeOutSecs = 5, $Tolerance = $_HandleImgSearch_Tolerance, $Transparency = $_HandleImgSearch_Transparency, $MaxImg = $_HandleImgSearch_MaxImg)
 	Local $Handle = $_HandleImgSearch_HWnd
 
@@ -250,15 +150,6 @@ Func _GlobalImgWaitExist($BmpLocal, $TimeOutSecs = 5, $Tolerance = $_HandleImgSe
 	Return SetError(@error, 0, $Results)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalGetPixel
-; Description ...:
-; Syntax ........: _GlobalGetPixel($X, $Y[, $IsReCapture = False[, $BmpSource = 0]])
-; Parameters ....: $X, $Y               - Coordinates for obtaining the color..
-;                  $IsReCapture         - [optional] Capture again the image. The default is set to False.
-;                  $BmpSource           - [optional] Bitmap handle when not using Global. Default is 0.
-; Return values .: Set @error = 1 in case of an error. Return color code in the format 0xRRGGBB.
-; ===============================================================================================================================
 Func _GlobalGetPixel($X, $Y, $IsReCapture = False, $BmpSource = 0)
 	Local $BMP = $_HandleImgSearch_BitmapHandle
 	If $BmpSource <> 0 Then $BMP = $BmpSource
@@ -276,17 +167,6 @@ Func _GlobalGetPixel($X, $Y, $IsReCapture = False, $BmpSource = 0)
 	Return SetError(0, 0, "0x" & Hex($Result, 6))
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _GlobalPixelCompare
-; Description ...: Compares the color code at the position $X, $Y with tolerance
-; Syntax ........: _GlobalPixelCompare($X, $Y, $PixelColor[, $Tolerance = $_HandleImgSearch_Tolerance[, $IsReCapture = False[, $BmpSource = 0]]])
-; Parameters ....: $X, $Y - Coordinates to be compared.
-; 					$PixelColor - Color to be compared.
-; 					$Tolerance - [optional] Tolerance value. Default is 20.
-; 					$IsReCapture - [optional] Retake the image. Default is False.
-; 					$BmpSource - [optional] Handle of the Bitmap if not using Global. Default is 0.
-; Return values .: Set @error = 1 if an error occurs. Returns True if found, False if not found.
-; ===============================================================================================================================
 Func _GlobalPixelCompare($X, $Y, $PixelColor, $Tolerance = $_HandleImgSearch_Tolerance, $IsReCapture = False, $BmpSource = 0)
 	Local $PixelColorSource = _GlobalGetPixel($X, $Y, $IsReCapture, $BmpSource)
 	If @error Then Return SetError(1, 0, False)
@@ -294,26 +174,6 @@ Func _GlobalPixelCompare($X, $Y, $PixelColor, $Tolerance = $_HandleImgSearch_Tol
 	Return _ColorInBounds($PixelColorSource, $PixelColor, $Tolerance)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _HandleImgSearch
-; Description ...: Search for an image within a handle. If $hwnd = "", search the entire current screen.
-; Syntax ........: _HandleImgSearch
-; Parameters ....: $hwnd - Handle of the window to capture. If left blank "" will capture the desktop.
-; 					$bmpLocal - Path to the BMP image to search for.
-; 					$x, $y, $iWidth, $iHeight - Search area. Default is the entire image captured from $hwnd.
-; 					$Tolerance - Color deviation of the image.
-;                   $Transparancy			- [optional] The color in HEX that you want to set as the transparency. Default is no transparent.	
-;													    (Eg. If you set "0xFFFFFF", all the White color in $BmpLocal will be ignored).	
-; 					$MaxImg - Maximum number of images to return.
-; Return values .: Success: Returns a 2d array with the following format:
-;						$aCords[0][0] = Total number of positions found
-; 						$aCords[$i][0] = X coordinate
-; 						$aCords[$i][1] = Y coordinate
-; 						$aCords[$i][2] = Width of bitmap
-; 						$aCords[$i][3] = Height of bitmap
-;
-; 				Failure: Returns 0 and sets @error to 1
-; ===============================================================================================================================
 Func _HandleImgSearch($hwnd, $bmpLocal, $x = 0, $y = 0, $iWidth = -1, $iHeight = -1, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
 	If StringInStr($hwnd, "*") Then
 		Local $BMP = Ptr(StringReplace($hwnd, "*", ""))
@@ -333,27 +193,6 @@ Func _HandleImgSearch($hwnd, $bmpLocal, $x = 0, $y = 0, $iWidth = -1, $iHeight =
 	Return SetError(@error, 0, $pos)
 EndFunc   ;==>_HandleImgSearch
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _HandleImgWaitExist
-; Description ...: This function searches for an image within a specified handle. If $hwnd is empty, it will search the entire current screen.
-; Syntax ........: _HandleImgWaitExist
-; Parameters ....: $hwnd - Handle of the window to capture. If empty ("") the desktop will be captured.
-; 					$bmpLocal - Path to the BMP image to search for.
-; 					$timeOutSecs - Maximum search time (in seconds).
-; 					$x, $y, $iWidth, $iHeight - Search region. By default, it searches the entire image captured from $hwnd.
-; 					$Tolerance - Color deviation of the image.
-;                   $Transparancy - The color in HEX that you want to set as the transparency. Default is no transparent.	
-;													    (Eg. If you set "0xFFFFFF", all the White color in $BmpLocal will be ignored).	
-; 					$MaxImg - Maximum number of images to return.
-; Return values .: Success: Returns a 2d array with the following format:
-; 							$aCords[0][0] = Total number of found positions
-; 							$aCords[$i][0] = X coordinate
-; 							$aCords[$i][1] = Y coordinate
-; 							$aCords[$i][2] = Width of the bitmap
-; 							$aCords[$i][3] = Height of the bitmap
-;
-; 					Failure: Returns 0 and sets @error to 1
-; ===============================================================================================================================
 Func _HandleImgWaitExist($hwnd, $bmpLocal, $timeOutSecs = 5, $x = 0, $y = 0, $iWidth = -1, $iHeight = -1, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
 	$timeOutSecs = $timeOutSecs*1000
 	Local $timeStart = TimerInit()
@@ -368,26 +207,6 @@ Func _HandleImgWaitExist($hwnd, $bmpLocal, $timeOutSecs = 5, $x = 0, $y = 0, $iW
 	Return SetError(1, 0, $Results)
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _BmpImgSearch
-; Description ...: Searches for an image in a BMP image.
-; Syntax ........: _BmpImgSearch
-; Parameters ....: $SourceBmp - The path to the source BMP image.
-; 					$FindBmp - The path to the BMP image to be searched for.
-; 					$x, $y, $iWidth, $iHeight - The area to search in. The default is the entire image captured from $hwnd.
-; 					$Tolerance - The color deviation of the image.
-;                   $Transparancy - The color in HEX that you want to set as the transparency. Default is no transparent.	
-;													    (Eg. If you set "0xFFFFFF", all the White color in $BmpLocal will be ignored).	
-; 					$MaxImg - The maximum number of images to be returned.
-; Return values .: Success: Returns a 2D array with the following format:
-; 					$aCords[0][0] = The total number of locations found
-; 					$aCords[$i][0] = The X coordinate
-; 					$aCords[$i][1] = The Y coordinate
-; 					$aCords[$i][2] = The width of the bitmap
-; 					$aCords[$i][3] = The height of the bitmap
-;
-; 					Failure: Returns 0 and sets @error to 1
-; ===============================================================================================================================
 Func _BmpImgSearch($SourceBmp, $FindBmp, $x = 0, $y = 0, $iWidth = -1, $iHeight = -1, $Tolerance = 15, $Transparency = "", $MaxImg = 1000)
 	Local $SourceBitmap = _GDIPlus_BitmapCreateFromFile($SourceBmp)
 	If @error Then Return SetError(1, 0, 0)
@@ -402,16 +221,6 @@ Func _BmpImgSearch($SourceBmp, $FindBmp, $x = 0, $y = 0, $iWidth = -1, $iHeight 
 	Return SetError(@error, 0, $pos)
 EndFunc   ;==>_BmpImgSearch
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _HandleGetPixel
-; Description ...: Retrieves the color value at a specified coordinate of an image based on its handle.
-; Syntax ........: _HandleGetPixel($hwnd, $getX, $getY[, $x = 0[, $y = 0[, $Width = -1[, $Height = -1]]]])
-; Parameters ....: $hwnd - a handle value.
-; 					$getX, $getY - The coordinates of the pixel to retrieve the color value.
-; 					$x, $y, $iWidth, $iHeight - The area of the image in the handle to capture. By default, it captures the whole image from $hwnd.
-; Return values .:  Sucess: Return the color in Hex (Eg. 0xFFFFFFFF) 
-; 					Failure: Return 0 and set @error = 1.
-; ===============================================================================================================================
 Func _HandleGetPixel($hwnd, $getX, $getY, $x = 0, $y = 0, $Width = -1, $Height = -1)
 	Local $BMP = _HandleCapture($hwnd, $x, $y, $Width, $Height, True, "")
 	If @error Then Return SetError(1, 0, 0)
@@ -423,19 +232,6 @@ Func _HandleGetPixel($hwnd, $getX, $getY, $x = 0, $y = 0, $Width = -1, $Height =
 	Return SetError(0, 0, "0x" & Hex($result, 6))
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _HandlePixelCompare
-; Description ...: Compares the color of a pixel in a handle image to a specified color with a tolerance value.
-; Syntax ........: _HandlePixelCompare($hwnd, $getX, $getY, $pixelColor, $tolerance [, $x = 0 [, $y = 0 [, $Width = -1 [, $Height = -1]]]])
-; Parameters ....: $hwnd - A handle value of the image.
-; 					$getX, $getY - The coordinates of the pixel to compare.
-; 					$pixelColor - The color to compare to in hex format (e.g. "0xFF0000" for red).
-; 					$tolerance - The color tolerance value in range 0-255.
-; 					$x, $y, $Width, $Height - Optional parameters to specify the area of the image in the handle to capture.
-; 						Default is the entire image captured from $hwnd.
-; Return values .: Returns True if the color of the pixel matches within the specified tolerance, False otherwise.
-; Returns @error = 1 if there is an error in capturing the image or getting the pixel color.
-; ===============================================================================================================================
 Func _HandlePixelCompare($hwnd, $getX, $getY, $pixelColor, $tolerance = 15, $x = 0, $y = 0, $Width = -1, $Height = -1)
 	Local $BMP = _HandleCapture($hwnd, $x, $y, $Width, $Height, True, "")
 	If @error Then Return SetError(1, 0, False)
@@ -447,27 +243,6 @@ Func _HandlePixelCompare($hwnd, $getX, $getY, $pixelColor, $tolerance = 15, $x =
 	Return SetError(0, 0, _ColorInBounds($pixelColor, "0x" & Hex($result, 6), $tolerance))
 EndFunc
 
-; #FUNCTION# ====================================================================================================================
-; Name ..........: _HandleCapture
-; Description ...: Captures an image of a window specified by its handle. If the handle is empty, the function captures the current screen.
-; Syntax ........: _HandleCapture([$hwnd = ""[, $x = 0[, $y = 0[, $Width = -1[, $Height = -1[, $IsBMP = False[, $SavePath = ""[, $IsUser32 = False]]]]]]]])
-; Parameters ....:  $hwnd     	- [optional] Handle of the window to capture. If empty ("") then the function captures the current screen.
-;    				$x        	- [optional] The x-coordinate of the upper-left corner of the image in the window. Default is 0.
-;    				$y        	- [optional] The y-coordinate of the upper-left corner of the image in the window. Default is 0.
-;    				$Width    	- [optional] The width of the image in the window. Default is -1 (the entire window is captured).
-;    				$Height   	- [optional] The height of the image in the window. Default is -1 (the entire window is captured).
-;    				$IsBMP    	- [optional] True if the function returns a bitmap. False if the function returns an HBITMAP. Default is False.
-;    				$SavePath 	- [optional] The file path to save the captured image. Default is empty string.
-;    				$IsUser32 	- [optional] True to use User32.dll instead of _WinAPI_BitBlt. Default is False. (Try to get the right result).
-; Return values .: Success: Returns a 2d array with the following format:
-; 							$aCords[0][0] = Total number of found positions
-; 							$aCords[$i][0] = X coordinate
-; 							$aCords[$i][1] = Y coordinate
-; 							$aCords[$i][2] = Width of the bitmap
-; 							$aCords[$i][3] = Height of the bitmap
-;
-; 					Failure: Returns 0 and sets @error to 1
-; ===============================================================================================================================
 Func _HandleCapture($hwnd = "", $x = 0, $y = 0, $Width = -1, $Height = -1, $IsBMP = False, $SavePath = "", $IsUser32 = False)
 	If $hwnd = "" Then
 		Local $Right = $Width = -1 ? -1 : $x + $Width - 1
