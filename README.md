@@ -1,4 +1,4 @@
-# Global Image Processing Functions
+# HandleImgSearch UDF
 
 This repository contains a set of global image processing functions that can be used for various tasks, including capturing, searching, and comparing images. These functions provide flexibility and customization options to suit your specific needs.
 
